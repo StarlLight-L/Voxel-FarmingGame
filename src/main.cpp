@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <iostream>
+#include <optional>
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -9,6 +10,7 @@
 
 #include "app/AppUi.h"
 #include "app/SceneBenchmark.h"
+#include "app/TitleScreen.h"
 #include "core/AssetPath.h"
 #include "graphics/Example3DMesh.h"
 #include "graphics/OpenGL.h"
@@ -81,6 +83,12 @@ int main() {
       startBenchmark(window, benchmark);
     }
 
+    // The start screen is skipped when benchmarking from the command line.
+    std::optional<craft::app::TitleScreen> titleScreen;
+    if (!commandLineBenchmark) {
+      titleScreen.emplace(window);
+    }
+
     glEnable(GL_DEPTH_TEST);
 
     while (!window.shouldClose()) {
@@ -90,6 +98,17 @@ int main() {
       if (framebufferWidth == 0 || framebufferHeight == 0) {
         window.swapBuffers();
         continue;
+      }
+
+      if (titleScreen) {
+        titleScreen->update();
+        if (!titleScreen->finished()) {
+          titleScreen->draw(framebufferWidth, framebufferHeight);
+          window.swapBuffers();
+          continue;
+        }
+        // Free the title screen's GPU resources once the game starts.
+        titleScreen.reset();
       }
 
       appUi.beginFrame();

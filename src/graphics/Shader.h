@@ -4,7 +4,9 @@
 #include <string_view>
 
 #include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace craft::graphics {
 
@@ -27,8 +29,20 @@ class Shader {
   // Sends a 4x4 matrix to the named GLSL uniform.
   void setMat4(std::string_view name, const glm::mat4& value) const;
 
+  // Sends a two-component vector to the named GLSL uniform.
+  void setVec2(std::string_view name, const glm::vec2& value) const;
+
   // Sends a three-component vector to the named GLSL uniform.
   void setVec3(std::string_view name, const glm::vec3& value) const;
+
+  // Sends a four-component vector to the named GLSL uniform.
+  void setVec4(std::string_view name, const glm::vec4& value) const;
+
+  // Sends one float to the named GLSL uniform.
+  void setFloat(std::string_view name, float value) const;
+
+  // Sends one integer, such as a sampler's texture unit, to the uniform.
+  void setInt(std::string_view name, int value) const;
 
  private:
   [[nodiscard]] int uniformLocation(std::string_view name) const;

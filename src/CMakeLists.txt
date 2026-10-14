@@ -1,18 +1,22 @@
-set(CRAFT_CORE_SOURCES
-    core/AssetPath.cpp
+# Sources are collected by directory; CONFIGURE_DEPENDS re-runs the glob at
+# build time, so adding a .cpp file needs no CMake edit.
+#   core/, graphics/ -> craft_core (library, also linked by tests)
+#   app/, main.cpp   -> Craft (executable, needs ImGui)
+file(GLOB_RECURSE CRAFT_CORE_SOURCES CONFIGURE_DEPENDS
+    core/*.cpp
+    graphics/*.cpp
+)
+file(GLOB_RECURSE CRAFT_APP_SOURCES CONFIGURE_DEPENDS
+    app/*.cpp
 )
 
-set(CRAFT_GRAPHICS_SOURCES
-    graphics/Example3DMesh.cpp
-    graphics/Shader.cpp
-    graphics/StbImage.cpp
-    graphics/Window.cpp
-)
+# SceneBenchmark has no ImGui dependency, so it lives in the library.
+set(CRAFT_BENCHMARK_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/app/SceneBenchmark.cpp)
+list(REMOVE_ITEM CRAFT_APP_SOURCES ${CRAFT_BENCHMARK_SOURCE})
 
 add_library(craft_core STATIC
     ${CRAFT_CORE_SOURCES}
-    ${CRAFT_GRAPHICS_SOURCES}
-    app/SceneBenchmark.cpp
+    ${CRAFT_BENCHMARK_SOURCE}
 )
 
 target_include_directories(craft_core PUBLIC
@@ -52,8 +56,7 @@ set(IMGUI_SOURCES
 
 add_executable(Craft
     main.cpp
-    app/AppUi.cpp
-    app/CustomUi.cpp
+    ${CRAFT_APP_SOURCES}
     ${IMGUI_SOURCES}
 )
 
