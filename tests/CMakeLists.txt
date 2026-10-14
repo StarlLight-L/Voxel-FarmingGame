@@ -10,8 +10,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
+# Any test_*.cpp added here is picked up automatically (see src/CMakeLists.txt).
+file(GLOB CRAFT_TEST_SOURCES CONFIGURE_DEPENDS
+    test_*.cpp
+)
+
 add_executable(craft_tests
-    test_math.cpp
+    ${CRAFT_TEST_SOURCES}
 )
 
 target_link_libraries(craft_tests PRIVATE
